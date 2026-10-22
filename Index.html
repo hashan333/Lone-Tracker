@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loan Tracker</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f4f7;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+}
+
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    box-sizing: border-box;
+    border-radius: 8px;
+}
+
+input {
+    border: 1px solid #ccc;
+}
+
+button {
+    border: none;
+    background: #222;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    margin-top: 25px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.paid {
+    background: #dff5df;
+    font-weight: bold;
+}
+
+.total {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Loan Tracker</h1>
+
+<input type="number" id="amount" placeholder="Enter deducted amount">
+
+<button onclick="addPayment()">Add Payment</button>
+
+<table>
+<thead>
+<tr>
+<th>Month</th>
+<th>Deducted Amount</th>
+</tr>
+</thead>
+
+<tbody id="paymentList"></tbody>
+</table>
+
+<div class="total">
+Total Deducted: Rs. <span id="total">0</span>
+</div>
+
+</div>
+
+<script>
+
+const months = [
+"January", "February", "March", "April",
+"May", "June", "July", "August",
+"September", "October", "November", "December"
+];
+
+let payments = JSON.parse(localStorage.getItem("loanPayments")) || {};
+
+function displayPayments() {
+
+    const list = document.getElementById("paymentList");
+    list.innerHTML = "";
+
+    let total = 0;
+
+    months.forEach(month => {
+
+        const amount = payments[month] || "";
+
+        if (amount) {
+            total += Number(amount);
+        }
+
+        const row = document.createElement("tr");
+
+        if (amount) {
+            row.className = "paid";
+        }
+
+        row.innerHTML = `
+            <td>${month}</td>
+            <td>${amount ? "Rs. " + amount : "-"}</td>
+        `;
+
+        list.appendChild(row);
+    });
+
+    document.getElementById("total").textContent = total.toLocaleString();
+}
+
+function addPayment() {
+
+    const amount = document.getElementById("amount").value;
+
+    if (!amount || amount <= 0) {
+        alert("Please enter the deducted amount.");
+        return;
+    }
+
+    const currentMonth = months[new Date().getMonth()];
+
+    payments[currentMonth] = amount;
+
+    localStorage.setItem("loanPayments", JSON.stringify(payments));
+
+    document.getElementById("amount").value = "";
+
+    displayPayments();
+}
+
+displayPayments();
+
+</script>
+
+</body>
+  </html>
